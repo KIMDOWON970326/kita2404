@@ -1,0 +1,87 @@
+
+교과목명 : 데이터베이스 구축 및 활용
+
+- 평가일 : 24.05.24
+- 성명 :김도원
+- 점수 :
+
+※ HR TABLES(EMPLOYEES, DEPARTMENTS, COUNTRIES, JOB_HISSTORY, JOBS, LOCATIONS, REGIONS)를 활용하여 다음 질문들을 수행하세요.
+--Q1. EMPLOYEES 테이블에서 이름, 연봉, 10% 인상된 연봉을 출력하세요.
+select first_name || ' ' || last_name 이름, salary 연봉, salary * 1.1 "인상된 연봉"
+from employees;
+    
+--Q2. EMPLOYEES 테이블에서 2005년 상반기에 입사한 사람들만 출력	
+select * from employees
+where hire_date between '05/01/01' and '05/06/30';
+--Q3. EMPLOYEES 테이블에서 업무 SA_MAN, IT_PROG, ST_MAN 인 사람만 출력
+select * from employees
+where job_id in ('SA_MAN', 'IT_PROG', 'ST_MAN');
+   
+--Q4. EMPLOYEES 테이블에서 manager_id 가 101에서 103인 사람만 출력
+select * from employees where manager_id between 101 and 103;
+
+--Q5. EMPLOYEES 테이블에서 LAST_NAME, HIRE_DATE 및 입사일의 6개월 후 첫 번째 월요일을 출력하세요.
+select last_name 이름, hiredate 입사일, next_day(add_months(hire_date, 6), '월')
+from employees;
+
+--Q6. EMPLOYEES 테이블에서 EMPLPYEE_ID, LAST_NAME, SALARY, HIRE_DATE 및 입사일 기준으로 현재일까지의 W_MONTH(근속월수)를 정수로 계산해서 출력하세요.(근속월수 기준 내림차순)
+select employee_id, last_name, salary, hire_date, trunc(months_between(sysdate,hire_date)) W_MONTH
+from employees order by W_MONTH desc;
+
+
+--Q7. EMPLOYEES 테이블에서 EMPLPYEE_ID, LAST_NAME, SALARY, HIRE_DATE 및 입사일 기준으로 W_YEAR(근속년수)를 계산해서 출력하세요.(근속년수 기준 내림차순)
+
+
+--Q8. EMPLOYEE_ID가 홀수인 직원의 EMPLPYEE_ID와 LAST_NAME을 출력하세요.
+select employee_id, last_name from employees where mod(employee_id, 2) = 1;
+
+--Q9. EMPLOYEES 테이블에서 EMPLPYEE_ID, LAST_NAME 및 M_SALARY(월급)을 출력하세요. 단 월급은 소수점 둘째자리까지만 표현하세요.
+select employee_id, last_name, round(salary/12, 2) from employees;
+
+--Q10. employees 테이블에서 salary가 10000원 이상인 직원만을 포함하는 뷰 special_employee를 생성하는 SQL 명령문을 작성하시오.
+create view special_employee as
+select * from employees where salary >= 10000;
+select * from special_employee;
+
+--Q11. EMPLOYEES 테이블에서 commission_pct 의  Null값 갯수를  출력하세요.
+select count(*) from employees where commission_pct is null;
+
+--Q12. EMPLOYEES 테이블에서 deparment_id 가 없는 직원을 추출하여  POSITION을 '신입'으로 출력하세요.
+select last_name, '신입' position 
+from employees where department_id is null;
+
+--Q13. 사번이 120번인 사람의 사번, 이름, 업무(job_id), 업무명(job_title)을 출력(join~on, where 로 조인하는 두 가지 방법 모두)
+
+
+--Q14. HR EMPLOYEES 테이블에서 이름에 FIRST_NAME에 LAST_NAME을 붙여서 'NAME' 컬럼명으로 출력하세요.
+--예) Steven King
+select first_name || ' ' || last_name NAME from employees;
+
+--Q15. HR EMPLOYEES 테이블에서 근속기간이 10년 이상인 직원을 포함하는 뷰를 생성하세요.
+
+
+--Q16. HR EMPLOYEES 테이블에서 escape 옵션을 사용하여 아래와 같이 출력되는 SQL문을 작성하세요.
+--job_id 칼럼에서  _을 와일드카드가 아닌 문자로 취급하여 '_A'를 포함하는  모든 행을 출력
+select * from employees where job_id like '%\_A%' escape '\';
+
+--Q17. HR EMPLOYEES 테이블에서 SALARY, LAST_NAME 순으로 올림차순 정렬하여 출력하세요.
+select salary, last_name from employees
+order by salary, last_name asc;
+   
+--Q18. Seo라는 사람의 부서명을 출력하세요.
+select E.last_name, D.department_name from employees E, departments D
+where E.department_id = D.department_id
+and E.last_name = 'Seo';
+
+--Q19. JOB ID 별 몇년차는 얼마 받는지 각 년차별로 샐러리 평균을 구하세요.
+
+
+--Q20. HR EMPLOYEES 테이블에서 salary가 20000 이상이면 'a', 10000과 20000 미만 사이면 'b', 그 이하면 'c'로 표시하는 쿼리를 
+--작성하시오.(case)
+
+--Q21. 학교 관리를 위하여 테이블 2개 이상으로 db를 구축하고 3개 이상 활용할 수 있는 case를 만드세요.(20점)
+
+
+--Q22. 다음 실습과제를 수행하세요.(20점)
+-- 1. 현재 hr에 있는 7개 테이블들을 분석해서 인사관리에 의미있는 인사이트 5개 이상을 기술하세요.
+-- 2. 인사관리 개선을 위한 KPI 2개를 설정하고 이것들을 테이블들의 데이터에 반영한 후 다시 분석해서 반영 여부를 검증하세요. 

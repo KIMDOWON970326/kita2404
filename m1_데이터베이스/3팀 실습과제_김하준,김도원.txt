@@ -1,0 +1,414 @@
+--[실습]
+-- 현재 hr 에 있는 7개 테이블들을 분석해서 인사관리에 의미있는 인사이트 5개 이상을 기술하세요.
+-- 인사관리 개선을 위한 KPI 2개를 설정하고 이것들을 테이블들의 데이터에 반영한 후 다시 분석해서 반영 여부를 검증하세요.
+
+---------------------------------------공통 인사이트 5개 이상---------------------------------------
+
+-직원의 부서 이동 추이 분석: JOB_HISTORY 테이블을 활용하여 직원들의 부서 이동 이력을 추적할 수 있습니다. 이를 통해 직원들이 얼마나 자주 부서를 변경하는지, 특정 부서나 직무에서의 이동 빈도를 확인할 수 있습니다. 이는 부서 내 이동 패턴을 파악하고, 조직 내 모빌리티를 이해하는 데 도움이 될 수 있습니다.
+
+-직원의 성과와 보상 관계 분석: EMPLOYEES 테이블의 SALARY와 COMMISSION_PCT 열을 사용하여 각 직원의 급여와 커미션 비율을 파악할 수 있습니다. 이 정보를 활용하여 성과에 따른 보상의 공정성을 평가하고, 성과 관련 보상 제도의 효과를 분석할 수 있습니다.
+
+-직원 이탈률 및 원인 파악: JOB_HISTORY 테이블을 통해 직원의 이탈 이력을 추적하고, 이탈한 직무나 부서, 그리고 그에 따른 원인을 파악할 수 있습니다. 이를 통해 조직 내에서 이탈률이 높은 부서나 직무를 식별하고, 이를 개선하기 위한 조치를 취할 수 있습니다.
+
+-부서별 인력 수 및 역량 분석: DEPARTMENTS 테이블을 통해 각 부서의 인력 수를 파악하고, EMPLOYEES 및 JOB_HISTORY 테이블을 활용하여 각 부서의 역량과 업무 수행 능력을 분석할 수 있습니다. 이를 통해 각 부서의 운영 효율성을 평가하고, 필요한 경우 부서 간 인력 이동이나 역량 강화를 위한 훈련 계획을 수립할 수 있습니다.
+
+-국가별 인력 분포 및 다양성 관리: EMPLOYEES 및 LOCATIONS 테이블을 활용하여 국가별 직원의 분포와 다양성을 분석할 수 있습니다. 이를 통해 조직의 국제화 정도를 이해하고, 각 국가에서의 인력 확보 및 관리 전략을 수립할 수 있습니다.
+
+-채용 효율성 평가: HIRE_DATE 열을 사용하여 각 직원의 채용일을 기록하고, 이를 통해 채용 프로세스의 효율성을 평가할 수 있습니다. 채용 후의 성과나 이탈률과 함께 고려하여 적절한 채용 전략을 수립할 수 있습니다.
+
+
+-----------------1번쨰
+
+--목표 및 성과 테이블 생성
+CREATE TABLE objective (
+    employee_id NUMBER,
+    job_id VARCHAR2(10),
+    evaluation_date DATE,
+    objective_rate NUMBER(5, 2),
+    performance_rate NUMBER(5, 2),
+    PRIMARY KEY (employee_id, evaluation_date),
+    FOREIGN KEY (employee_id) REFERENCES employees(employee_id),
+    FOREIGN KEY (job_id) REFERENCES jobs(job_id)
+);
+
+SELECT salary
+FROM employees
+
+
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (100, 'AD_PRES', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 150);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (101, 'AD_VP', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 140);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (102, 'AD_VP', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 160);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (103, 'IT_PROG', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 170);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (104, 'IT_PROG', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 180);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (105, 'IT_PROG', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 155);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (106, 'IT_PROG', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 145);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (107, 'IT_PROG', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 160);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (108, 'FI_MGR', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 175);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (109, 'FI_ACCOUNT', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 165);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (110, 'FI_ACCOUNT', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 170);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (111, 'FI_ACCOUNT', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 160);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (112, 'FI_ACCOUNT', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 150);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (113, 'FI_ACCOUNT', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 140);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (114, 'FI_ACCOUNT', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 130);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (115, 'PU_MAN', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 120);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (116, 'PU_CLERK', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 110);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (117, 'PU_CLERK', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 100);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (118, 'PU_CLERK', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 90);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (119, 'PU_CLERK', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 80);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (120, 'ST_MAN', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 70);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (121, 'ST_MAN', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 60);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (122, 'ST_MAN', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 50);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (123, 'ST_MAN', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 40);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (124, 'ST_MAN', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 30);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (125, 'ST_CLERK', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 20);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (126, 'ST_CLERK', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 10);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (127, 'ST_CLERK', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 170);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (128, 'ST_CLERK', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 160);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (129, 'ST_CLERK', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 150);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (130, 'ST_CLERK', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 140);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (131, 'ST_CLERK', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 130);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (132, 'ST_CLERK', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 120);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (133, 'ST_CLERK', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 110);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (134, 'ST_CLERK', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 100);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (135, 'ST_CLERK', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 90);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (136, 'ST_CLERK', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 80);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (137, 'ST_CLERK', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 70);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (138, 'ST_CLERK', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 60);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (139, 'ST_CLERK', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 50);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (140, 'ST_CLERK', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 40);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (141, 'ST_CLERK', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 30);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (142, 'ST_CLERK', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 20);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (143, 'ST_CLERK', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 10);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (144, 'SA_MAN', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 170);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (145, 'SA_MAN', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 160);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (146, 'SA_MAN', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 150);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (147, 'SA_MAN', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 140);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (148, 'SA_MAN', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 130);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (149, 'SA_MAN', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 110);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (150, 'SA_REP', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 200);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (151, 'SA_REP', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 190);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (152, 'SA_REP', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 180);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (153, 'SA_REP', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 160);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (154, 'SA_REP', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 160);
+INSERT INTO objective (employee_id, job_id, evaluation_date, objective_rate, performance_rate) VALUES (155, 'SA_REP', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 100, 150);
+
+
+SELECT * FROM objective
+
+SELECT * FROM increased_salary 
+
+
+--임금 책정 테이블 생성
+CREATE TABLE increased_salary (
+    employee_id NUMBER,
+    first_name VARCHAR2(20),
+    evaluation_date DATE,
+    salary NUMBER(8,2),
+    performance_rate NUMBER(5, 2),
+    total_salary NUMBER(9,2),
+    PRIMARY KEY (employee_id, evaluation_date),
+    FOREIGN KEY (employee_id) REFERENCES employees(employee_id)
+);
+
+
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (100, 'Steven', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 24000, 150, 30000);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (101, 'Neena', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 17000, 140, 19550);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (102, 'Lex', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 17000, 160, 20400);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (103, 'Alexander', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 9000, 170, 10800);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (104, 'Bruce', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 6000, 180, 7800);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (105, 'David', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 4800, 155, 5760);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (106, 'Valli', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 4800, 145, 5520);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (107, 'Diana', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 4200, 160, 5460);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (108, 'Nancy', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 12008, 175, 15609);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (109, 'Daniel', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 9000, 165, 11700);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (110, 'John', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 8200, 170, 10660);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (111, 'Ismael', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 7700, 160, 10010);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (112, 'Jose Manuel', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 7800, 150, 9750);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (113, 'Luis', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 6900, 140, 7935);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (114, 'Den', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 11000, 130, 12650);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (115, 'Alexander', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 3100, 120, 3410);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (116, 'Shelli', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 2900, 110, 3190);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (117, 'Sigal', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 2900, 100, 2900);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (118, 'Guy', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 2800, 100, 3080);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (119, 'Karen', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 2600, 90, 2860);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (120, 'Matthew', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 2500, 80, 2750);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (121, 'Adam', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 8000, 70, 8400);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (122, 'Payam', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 8200, 60, 8200);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (123, 'Shanta', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 7900, 50, 7900);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (124, 'Kevin', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 6500, 40, 6500);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (125, 'Julia', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 5800, 30, 5800);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (126, 'Irene', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 3200, 20, 3200);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (127, 'James', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 2700, 10, 2700);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (128, 'Steven', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 2400, 170, 3120);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (129, 'Neena', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 2200, 160, 2860);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (130, 'Lex', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 3300, 150, 4290);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (131, 'Alexander', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 2800, 140, 3640);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (132, 'Bruce', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 2500, 130, 3250);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (133, 'David', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 2100, 120, 2730);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (134, 'Valli', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 3300, 110, 3630);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (135, 'Diana', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 2900, 100, 3190);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (136, 'Nancy', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 2400, 90, 2640);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (137, 'Daniel', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 2200, 80, 2420);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (138, 'John', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 3600, 70, 3960);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (139, 'Ismael', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 3200, 60, 3200);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (140, 'Jose Manuel', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 2700, 50, 2700);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (141, 'Luis', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 2500, 40, 2500);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (142, 'Den', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 14000, 30, 15400);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (143, 'Alexander', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 13500, 20, 13500);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (144, 'Shelli', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 12000, 10, 12000);INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (118, 'Guy', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 2800, 100, 3080);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (119, 'Karen', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 2600, 90, 2860);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (120, 'Matthew', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 2500, 80, 2750);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (121, 'Adam', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 8000, 70, 8400);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (122, 'Payam', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 8200, 60, 8200);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (123, 'Shanta', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 7900, 50, 7900);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (124, 'Kevin', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 6500, 40, 6500);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (125, 'Julia', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 5800, 30, 5800);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (126, 'Irene', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 3200, 20, 3200);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (127, 'James', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 2700, 10, 2700);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (128, 'Steven', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 2400, 170, 3120);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (129, 'Neena', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 2200, 160, 2860);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (130, 'Lex', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 3300, 150, 4290);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (131, 'Alexander', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 2800, 140, 3640);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (132, 'Bruce', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 2500, 130, 3250);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (133, 'David', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 2100, 120, 2730);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (134, 'Valli', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 3300, 110, 3630);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (135, 'Diana', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 2900, 100, 3190);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (136, 'Nancy', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 2400, 90, 2640);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (137, 'Daniel', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 2200, 80, 2420);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (138, 'John', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 3600, 70, 3960);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (139, 'Ismael', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 3200, 60, 3200);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (140, 'Jose Manuel', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 2700, 50, 2700);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (141, 'Luis', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 2500, 40, 2500);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (142, 'Den', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 14000, 30, 15400);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (143, 'Alexander', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 13500, 20, 13500);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (144, 'Shelli', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 12000, 10, 12000);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (145, 'Sigal', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 11000, 170, 14300);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (146, 'Guy', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 10500, 160, 13650);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (147, 'Karen', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 10000, 150, 13000);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (148, 'Matthew', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 9500, 140, 12350);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (149, 'Adam', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 9600, 130, 12480);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (150, 'Payam', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 7400, 120, 9620);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (151, 'Shanta', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 7300, 110, 9490);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (152, 'Kevin', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 6100, 100, 7930);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (153, 'Julia', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 11000, 90, 14300);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (154, 'Irene', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 8800, 80, 11440);
+INSERT INTO increased_salary (employee_id, first_name, evaluation_date, salary, performance_rate, total_salary) VALUES (155, 'James', TO_DATE('2024-06-30', 'YYYY-MM-DD'), 8600, 70, 11180);
+
+
+
+--요약
+-명확한 임금 측정 기준을 세워 성과에 따라 임금이 결정된다면
+직원들의 업무 효율이 늘어날 것이다.
+--objective 테이블로 각 직원들의 성과율을 저장
+SELECT * FROM objective
+--increased_salary 테이블로 성과율에 기반하여 최종적인 직원들의 급여를 확인
+SELECT * FROM increased_salary
+
+--KPI 운영 및 모니터링
+--정기적인 데이터 업데이트: 성과 데이터를 주기적으로 수집하고 업데이트
+--성과 급여 반영: 평가 결과를 기반으로 성과 급여를 반영하고, 이를 투명하게 공개
+--이와 같은 KPI 설정과 데이터 관리를 통해 임금 책정의 기준을 명확히 하고, 직원들의 동기 부여와 성과 향상을 기대할 수 있음.
+
+
+-----------------2번쨰
+select * from employees;
+
+--1. 부서별 이탈률 계산
+--부서별로 이탈한 직원 수를 계산하고 전체 직원 수 대비 이탈률을 계산합니다.
+WITH EmployeeCounts AS (
+    SELECT 
+        DEPARTMENT_ID,
+        COUNT(*) AS TOTAL_EMPLOYEES
+    FROM 
+        EMPLOYEES
+    GROUP BY 
+        DEPARTMENT_ID
+),
+JobHistoryCounts AS (
+    SELECT 
+        DEPARTMENT_ID,
+        COUNT(DISTINCT EMPLOYEE_ID) AS TOTAL_DEPARTURES
+    FROM 
+        JOB_HISTORY
+    GROUP BY 
+        DEPARTMENT_ID
+)
+SELECT 
+    D.DEPARTMENT_NAME,
+    EC.TOTAL_EMPLOYEES,
+    JHC.TOTAL_DEPARTURES,
+    (JHC.TOTAL_DEPARTURES / EC.TOTAL_EMPLOYEES) * 100 AS DEPARTURE_RATE
+FROM 
+    EmployeeCounts EC
+JOIN 
+    JobHistoryCounts JHC ON EC.DEPARTMENT_ID = JHC.DEPARTMENT_ID
+JOIN 
+    DEPARTMENTS D ON EC.DEPARTMENT_ID = D.DEPARTMENT_ID
+ORDER BY 
+    DEPARTURE_RATE DESC;
+    
+    
+--2. 직무별 이탈률 계산
+--직무별로 이탈한 직원 수를 계산하고 전체 직원 수 대비 이탈률을 계산합니다.
+WITH EmployeeCounts AS (
+    SELECT 
+        JOB_ID,
+        COUNT(*) AS TOTAL_EMPLOYEES
+    FROM 
+        EMPLOYEES
+    GROUP BY 
+        JOB_ID
+),
+JobHistoryCounts AS (
+    SELECT 
+        JOB_ID,
+        COUNT(DISTINCT EMPLOYEE_ID) AS TOTAL_DEPARTURES
+    FROM 
+        JOB_HISTORY
+    GROUP BY 
+        JOB_ID
+)
+SELECT 
+    J.JOB_TITLE,
+    EC.TOTAL_EMPLOYEES,
+    JHC.TOTAL_DEPARTURES,
+    (JHC.TOTAL_DEPARTURES / EC.TOTAL_EMPLOYEES) * 100 AS DEPARTURE_RATE
+FROM 
+    EmployeeCounts EC
+JOIN 
+    JobHistoryCounts JHC ON EC.JOB_ID = JHC.JOB_ID
+JOIN 
+    JOBS J ON EC.JOB_ID = J.JOB_ID
+ORDER BY 
+    DEPARTURE_RATE DESC;
+    
+--3. 직원 이탈 원인 분석
+--직원의 이탈 원인을 파악하기 위해 각 직원이 이탈한 부서와 직무를 조사합니다. 이를 통해 특정 부서나 직무에서 이탈률이 높은지 확인할 수 있습니다.
+SELECT 
+    JH.EMPLOYEE_ID,
+    E.FIRST_NAME,
+    E.LAST_NAME,
+    D.DEPARTMENT_NAME,
+    J.JOB_TITLE,
+    JH.START_DATE,
+    JH.END_DATE,
+    (JH.END_DATE - JH.START_DATE) AS DURATION
+FROM 
+    JOB_HISTORY JH
+JOIN 
+    EMPLOYEES E ON JH.EMPLOYEE_ID = E.EMPLOYEE_ID
+JOIN 
+    DEPARTMENTS D ON JH.DEPARTMENT_ID = D.DEPARTMENT_ID
+JOIN 
+    JOBS J ON JH.JOB_ID = J.JOB_ID
+ORDER BY 
+    DURATION DESC;
+    
+--4. 이탈률이 높은 부서 및 직무 파악
+--이탈률이 높은 부서와 직무를 파악하기 위해 부서와 직무별 이탈 건수를 계산합니다.
+SELECT 
+    D.DEPARTMENT_NAME,
+    J.JOB_TITLE,
+    COUNT(*) AS DEPARTURE_COUNT
+FROM 
+    JOB_HISTORY JH
+JOIN 
+    DEPARTMENTS D ON JH.DEPARTMENT_ID = D.DEPARTMENT_ID
+JOIN 
+    JOBS J ON JH.JOB_ID = J.JOB_ID
+GROUP BY 
+    D.DEPARTMENT_NAME, J.JOB_TITLE
+ORDER BY 
+    DEPARTURE_COUNT DESC;
+
+***************************이탈률 개선 kpi*******************************************
+--1. 이탈률(Turnover Rate)
+--목표: 이탈률을 10% 이하로 유지
+SELECT 
+    DEPARTMENT_ID,
+    COUNT(*) AS TOTAL_EMPLOYEES,
+    (SELECT COUNT(*) FROM JOB_HISTORY WHERE END_DATE BETWEEN ADD_MONTHS(SYSDATE, -12) AND SYSDATE AND DEPARTMENT_ID = E.DEPARTMENT_ID) AS DEPARTURES_LAST_YEAR,
+    (SELECT COUNT(*) FROM JOB_HISTORY WHERE END_DATE BETWEEN ADD_MONTHS(SYSDATE, -12) AND SYSDATE AND DEPARTMENT_ID = E.DEPARTMENT_ID) / COUNT(*) * 100 AS TURNOVER_RATE
+FROM 
+    EMPLOYEES E
+GROUP BY 
+    DEPARTMENT_ID;
+    
+--2. 부서별 이탈률(Departmental Turnover Rate)
+--목표: 부서별 이탈률을 15% 이하로 유지
+SELECT 
+    D.DEPARTMENT_NAME,
+    COUNT(*) AS TOTAL_EMPLOYEES,
+    (SELECT COUNT(*)
+     FROM JOB_HISTORY JH
+     WHERE JH.END_DATE BETWEEN ADD_MONTHS(SYSDATE, -12) AND SYSDATE
+       AND JH.DEPARTMENT_ID = D.DEPARTMENT_ID) AS DEPARTURES_LAST_YEAR,
+    (SELECT COUNT(*)
+     FROM JOB_HISTORY JH
+     WHERE JH.END_DATE BETWEEN ADD_MONTHS(SYSDATE, -12) AND SYSDATE
+       AND JH.DEPARTMENT_ID = D.DEPARTMENT_ID) / COUNT(*) * 100 AS DEPARTMENTAL_TURNOVER_RATE
+FROM 
+    EMPLOYEES E
+JOIN 
+    DEPARTMENTS D ON E.DEPARTMENT_ID = D.DEPARTMENT_ID
+GROUP BY 
+    D.DEPARTMENT_NAME, D.DEPARTMENT_ID
+ORDER BY 
+    D.DEPARTMENT_NAME;
+
+--3. 직무별 이탈률(Job Role Turnover Rate)
+--목표: 직무별 이탈률을 12% 이하로 유지
+SELECT 
+    J.JOB_TITLE,
+    COUNT(*) AS TOTAL_EMPLOYEES,
+    (SELECT COUNT(*)
+     FROM JOB_HISTORY JH
+     WHERE JH.END_DATE BETWEEN ADD_MONTHS(SYSDATE, -12) AND SYSDATE
+       AND JH.JOB_ID = J.JOB_ID) AS DEPARTURES_LAST_YEAR,
+    (SELECT COUNT(*)
+     FROM JOB_HISTORY JH
+     WHERE JH.END_DATE BETWEEN ADD_MONTHS(SYSDATE, -12) AND SYSDATE
+       AND JH.JOB_ID = J.JOB_ID) / COUNT(*) * 100 AS JOB_ROLE_TURNOVER_RATE
+FROM 
+    EMPLOYEES E
+JOIN 
+    JOBS J ON E.JOB_ID = J.JOB_ID
+GROUP BY 
+    J.JOB_TITLE, J.JOB_ID
+ORDER BY 
+    J.JOB_TITLE;
+    
+--4. 평균 근속 기간(Average Tenure)
+--목표: 평균 근속 기간을 5년 이상 유지
+SELECT 
+    AVG(END_DATE - START_DATE) AS AVERAGE_TENURE
+FROM 
+    JOB_HISTORY
+WHERE 
+    END_DATE IS NOT NULL;
+    
+--5. 재고용률(Rehire Rate)
+--목표: 재고용률을 5% 이상으로 유지
+-- 재고용된 직원 데이터가 있는 경우
+SELECT 
+    (SELECT COUNT(*) FROM JOB_HISTORY WHERE END_DATE IS NOT NULL) AS REHIRED_EMPLOYEES,
+    (SELECT COUNT(*) FROM JOB_HISTORY WHERE END_DATE IS NOT NULL) / (SELECT COUNT(*) FROM EMPLOYEES) * 100 AS REHIRE_RATE
+FROM 
+    DUAL;
+
+----------------------------------------요약----------------------------------------
+위의 쿼리들은 조직 내 부서별, 직무별 이탈률을 분석하고, 이탈의 원인을 파악하는 데 도움을 줍니다. 
+이를 통해 인재 관리의 문제점을 식별하고 개선할 수 있습니다. 
+각 부서와 직무의 이탈률을 지속적으로 모니터링하여 이탈률이 높은 부분에 대한 대응 전략을 수립하는 것이 중요합니다. 
+설정된 KPI를 통해 조직의 인재 유지 전략을 구체화하고, 직원의 근속 기간을 늘려 조직의 안정성을 높일 수 있습니다.
+
+
+
+
+
+
+
+
+
+
+
